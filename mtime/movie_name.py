@@ -58,7 +58,7 @@ def func1():
 
 class GetmovieName():
     def __init__(self):
-        self.browser  = webdriver.Chrome('../')
+        self.browser  = webdriver.Chrome()
     def __del__(self):
         self.browser.close()
     def __exit__(self):
