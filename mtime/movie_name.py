@@ -19,42 +19,42 @@ import json
 import time
 import random
 
-class Render(QWebPage):
-    def __init__(self, url):
-        self.app = QApplication(sys.argv)
-        QWebPage.__init__(self)
-        self.loadFinished.connect(self._loadFinished)
-        self.mainFrame().load(QUrl(url))
-        self.app.exec_()
+# class Render(QWebPage):
+#     def __init__(self, url):
+#         self.app = QApplication(sys.argv)
+#         QWebPage.__init__(self)
+#         self.loadFinished.connect(self._loadFinished)
+#         self.mainFrame().load(QUrl(url))
+#         self.app.exec_()
+#
+#     def _loadFinished(self, result):
+#         self.frame = self.mainFrame()
+#         self.app.quit()
 
-    def _loadFinished(self, result):
-        self.frame = self.mainFrame()
-        self.app.quit()
-
-def func1():
-    name = []
-
-    for i in range(1,3):
-        f_html = open('test.html', 'w')
-        url = "http://movie.mtime.com/movie/search/section/#pageIndex=%d&nation=138" % i
-        r = Render(url)
-        result = r.frame.toHtml()
-        f_result = str(result.toUtf8())
-        f_html.write(f_result)
-        f_html.close()
-        tree = html.fromstring(f_result)
-        archive_links1 = tree.xpath('//*[@id="searchResultRegion"]/ul/*/div[1]/div/div[2]/h3/a/text()')
-        archive_links2 = tree.xpath('//*[@id="searchResultRegion"]/ul/*/div[2]/div/div[2]/h3/a/text()')
-        name.append(archive_links1)
-        name.append(archive_links2)
-
-    name_file = open('name','a+')
-    for i in name:
-        for j in i :
-            name_file.write(j.encode('utf-8')+'\n')
-
-    name_file.close()
-    f_html.close()
+# def func1():
+#     name = []
+#
+#     for i in range(1,3):
+#         f_html = open('test.html', 'w')
+#         url = "http://movie.mtime.com/movie/search/section/#pageIndex=%d&nation=138" % i
+#         r = Render(url)
+#         result = r.frame.toHtml()
+#         f_result = str(result.toUtf8())
+#         f_html.write(f_result)
+#         f_html.close()
+#         tree = html.fromstring(f_result)
+#         archive_links1 = tree.xpath('//*[@id="searchResultRegion"]/ul/*/div[1]/div/div[2]/h3/a/text()')
+#         archive_links2 = tree.xpath('//*[@id="searchResultRegion"]/ul/*/div[2]/div/div[2]/h3/a/text()')
+#         name.append(archive_links1)
+#         name.append(archive_links2)
+#
+#     name_file = open('name','a+')
+#     for i in name:
+#         for j in i :
+#             name_file.write(j.encode('utf-8')+'\n')
+#
+#     name_file.close()
+#     f_html.close()
 
 class GetmovieName():
     def __init__(self):
@@ -113,12 +113,6 @@ class GetmovieName():
         en_name = element.find_element_by_xpath('div/div[2]/p[1]/a').text.encode('utf-8')
         detail = name + ',' + en_name + ',' + score + ',' + p_num + ',' + year
         return detail
-
-
-
-
-
-
 
 
 
