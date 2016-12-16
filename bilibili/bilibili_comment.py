@@ -5,7 +5,7 @@
 @author: nyansama
 @contact: nyansama@163.com
 @software: PyCharm Community Edition
-@file: comment_test.py
+@file: bilibili_comment.py
 @time: 2016/12/5 20:32
 """
 
