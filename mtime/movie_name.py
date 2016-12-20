@@ -9,9 +9,9 @@
 @time: 2016/12/6 18:53
 """
 import sys
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
-from PyQt4.QtWebKit import *
+# from PyQt4.QtGui import *
+# from PyQt4.QtCore import *
+# from PyQt4.QtWebKit import *
 from lxml import html
 from selenium import webdriver
 from selenium.common.exceptions import *
