@@ -59,7 +59,7 @@ class GetBilibiliComment():
             next_b.click()
 
         for i in comment:
-            print i + '\n'
+            print (i + '\n')
 
     ####################
     # use json pkg get comment
