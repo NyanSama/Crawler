@@ -103,3 +103,5 @@ ENV/
 comment
 # data file
 .d
+/list/data.d
+/list/url.d
