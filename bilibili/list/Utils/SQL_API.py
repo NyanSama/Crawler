@@ -19,7 +19,6 @@ class SQL_API:
         self._conn = sql.connect(host='127.0.0.1', port=3306, user='root', passwd='1234', db=self._dbname,charset='utf8')
         self.cur = self._conn.cursor()
         pass
-
     # def __enter__(self):
     #     print("__ENTER__")
     #     self._conn = sql.connect(host='127.0.0.1', port=3306, user='root', passwd='1234', db=self._dbname)
@@ -95,6 +94,7 @@ class SQL_API:
         except AttributeError as e:
             print("[-]Object init/del Fail!：" + str(e))
         pass
+
 
 
 if __name__ == '__main__':
