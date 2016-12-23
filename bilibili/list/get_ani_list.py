@@ -12,8 +12,9 @@ import requests as re
 import simplejson as json
 from DEF_DATA import types as tps
 from Utils.SQL_API import SQL_API as sql
+# from pymysql import err
 from lxml import html
-
+import time
 
 # import sqlite3 as sql
 
@@ -34,7 +35,7 @@ def get_type_name(i):
     elif i == 4:
         return '其他'
     else:
-        return "ALL"
+        return "未知"
 
 
 def get_country_name(i):
@@ -49,7 +50,19 @@ def get_country_name(i):
     elif i == 4:
         return "其他"
     else:
-        return "ALL"
+        return "未知"
+
+def get_finish_state(i):
+    # input a num
+    # output finish state
+    if i == 1:
+        return '连载中'
+    elif i == 2:
+        return '完结'
+    elif i == 0:
+        return '未开播'
+    else:
+        return '未知'
 
 
 def add_info_to_detail(details, c, t):
@@ -98,7 +111,7 @@ class Get_list_data:
         # data['id'] = x['season_id']
         # data['cover'] = x['cover']
         # data['like_num'] = x['favorites']
-        # data['is_finish'] = x['is_finish']
+        # data['is_finish'] = x['is_finish']  # 2:finished 1: living 0:not pub
         # data['newest_index'] = x['newest_ep_index']
         # data['pub_time'] = x['pub_time']
         # data['name'] = x['title']
@@ -112,6 +125,39 @@ class Get_list_data:
 #     jpkg = re.get(url)
 #     data = json.loads(jpkg,'utf-8')
 
+def save_data_to_file(datalist,urllist):
+    # SAVE DATA　TO FILE
+    try:
+        f1 = open('data.d','w+',encoding='utf-8')
+        f1.write('season_id||title||cover||favorites||pub_time||update_time||is_finish||country||type||week||url\n')
+        for data in datalist:
+            line_data = []
+            line_data.append(data['season_id'])
+            line_data.append(data['title'])
+            line_data.append(str(data['favorites']))
+            pub_time = time.strftime('%Y-%m-%d',time.localtime(data['pub_time'])) # use localtime for reading
+            line_data.append(pub_time + ',' + str(data['pub_time']))
+            update_time = time.strftime('%Y-%m-%d',time.localtime(data['update_time']))
+            line_data.append(update_time + ',' + str(data['update_time']))
+            line_data.append(data['week'])
+            line_data.append(get_country_name(data['country']))
+            line_data.append(get_type_name(data['type']))
+            line_data.append(get_finish_state(data['is_finish']))
+            line_data.append(data['url'])
+            line_data.append(data['cover'])
+            line_str = "||".join(line_data)
+            f1.write(line_str+'\n')
+        f1.close()
+
+        f2 = open('url.d','w+')
+        for url in urllist:
+            f2.write(url + '\n')
+    except Exception as e:
+        print(str(x) for x in e)
+        return 'fail'
+    return 'success'
+
+
 def main():
     tp = tps()
     TYPE = [tp.TYPE_TV, tp.TYPE_THEME, tp.TYPE_OVA, tp.TYPE_OTHER]
@@ -122,16 +168,18 @@ def main():
     for t in TYPE:
         for c in COUNTRY:
             # get pages info
+            print("[+]正在提取的数据类型为%s-%s:" % (get_type_name(t),get_country_name(c)))
             page = 1
             url = "http://bangumi.bilibili.com/web_api/season/index?page=%d&page_size=20&version=%d" \
                   "&is_finish=0&start_year=&quarter=0&tag_id=&index_type=1&index_sort=0&area=%d" % (page, t, c)
             process = Get_list_data(url)
             pages = int(process.pages)
-
+            print ('[+--]总页面数为:%d' % pages)
             if not pages:
                 continue
             # collect all datas in type and country
             for page in range(1, pages + 1):
+                print('[+--]正在提取第 %d 页...' % page)
                 if page != 1:
                     url = "http://bangumi.bilibili.com/web_api/season/index?page=%d&page_size=20&version=%d" \
                           "&is_finish=0&start_year=&quarter=0&tag_id=&index_type=1&index_sort=0&area=%d" % (
@@ -143,9 +191,21 @@ def main():
                 details = process.get_details()
                 add_info_to_detail(details, c, t)
                 datalist.extend(details)
+                time.sleep(2)
+                break
+            break
+        break
+
+    # save_data_to_file(datalist,anime_url_list)
+
+
 
     # SAVE datalist and commic_url_list
     # db = sql('bilibili')
+    # try:
+    #     db.init_db()
+    # except Exception as e:
+    #     print (str(x) for x in e)
     # db.cur.execute("SELECT 1")
 
 
