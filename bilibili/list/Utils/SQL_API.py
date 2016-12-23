@@ -9,7 +9,7 @@
 @time: 2016/12/22 15:13
 """
 import pymysql as sql
-
+from pymysql import err
 
 # this api is write for with statement
 class SQL_API:
@@ -27,22 +27,26 @@ class SQL_API:
     #     return self
 
     def init_db(self):
-        self.init_types()
+        # self.init_types()
+        self.init_anime()
         pass
 
     def init_anime(self):
         sql_str = "CREATE TABLE anime(id INTEGER PRIMARY KEY NOT NULL, \
                    name VARCHAR(150) NOT NULL , \
-                   cover VARCHAR ,\
                    favorite INT ,\
-                   pub_time INT ,\
+                   year INT ,\
+                   season INT ,\
+                   pub_time INT,\
                    status INT ,\
                    total_count INT ,\
                    update_time INT ,\
-                   url VARCHAR ,\
                    week INT ,\
                    country INT ,\
-                   types INT );"
+                   types INT,\
+                   url VARCHAR ,\
+                   cover VARCHAR ,\
+                    );"
         self.cur.execute(sql_str)
         pass
 
@@ -84,11 +88,20 @@ class SQL_API:
 
     def __del__(self):
         # print("__DEL__")
-        self.cur.close()
-        self._conn.commit()
-        self._conn.close()
+        try:
+            self.cur.close()
+            self._conn.commit()
+            self._conn.close()
+        except AttributeError as e:
+            print("[-]Object init/del Fail!：" + str(e))
         pass
 
 
 if __name__ == '__main__':
+    # try:
+    #     db = SQL_API('bilibili3')
+    # except err.InternalError as e:
+    #     print ("[-]INIT ERROR" + str(e))
+    # db.init_anime()
+
     pass
