@@ -107,26 +107,17 @@ class Get_list_data:
         for x in self._data['result']['list']:
             datalist.append(x)
         return datalist
-        # data = {}
-        # data['id'] = x['season_id']
-        # data['cover'] = x['cover']
-        # data['like_num'] = x['favorites']
-        # data['is_finish'] = x['is_finish']  # 2:finished 1: living 0:not pub
-        # data['newest_index'] = x['newest_ep_index']
-        # data['pub_time'] = x['pub_time']
-        # data['name'] = x['title']
-        # data['updata_time'] = x['update_time']
-        # data['week'] = x['week']
 
-
-# def get_list():
-#     url = "http://bangumi.bilibili.com/web_api/season/index?page=3&page_size=20&version=0" \
-#           "&is_finish=0&start_year=&quarter=0&tag_id=&index_type=1&index_sort=0"
-#     jpkg = re.get(url)
-#     data = json.loads(jpkg,'utf-8')
 
 def save_data_to_file(datalist,urllist):
-    # SAVE DATA　TO FILE
+    """
+    THis is function for saving data to file
+
+    :param datalist: LIST which elements is a DICT from json pkg
+    :param urllist: LIST which elements is url strings
+    :return:
+    :output: data.d (file contain all data) url.d　(file contain all urls)
+    """
     try:
         f1 = open('data.d','w+',encoding='utf-8')
         f1.write('season_id||title||cover||favorites||pub_time||update_time||is_finish||country||type||week||url\n')
