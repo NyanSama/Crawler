@@ -205,6 +205,13 @@ def save_data_to_sql(db,datalist):
             print("[--]ERROR DATA IS :" + str(data))
 
 
+def save_url_to_file():
+    db = sql('bilibili')
+    f = open('url.d', 'w+')
+    list = db.cur.execute("SELECT url FROM anime")
+    for raw in db.cur:
+        f.write(raw[0]+'\n')
+    f.close()
 
 
 
@@ -283,20 +290,5 @@ def get_style():
 
 if __name__ == '__main__':
     # main()
-
-    # with sql('bilibili') as db:
-    #     db.init_table()
-    # with sql('bilibili') as db:
-    #     try:
-    #         db.init_table()
-    #     except Exception as e:
-    #         pass
-
-    # get_style() # finish
-    main()
-    # db = sql('bilibili')
-    # data1 = {'country': 2, 'season_status': 2, 'cover': 'http://i0.hdslb.com/bfs/bangumi/fcfd760465cf27b532b5b304352d597262f2fffa.jpg', 'update_time': 1403783691, 'title': '哆啦A梦 春之章', 'is_finish': 2, 'favorites': 15449, 'url': 'http://bangumi.bilibili.com/anime/2457', 'total_count': 6, 'pub_time': 291916800, 'newest_ep_index': '85年', 'season_id': '2457', 'type': 1}
-    # data2 = {'country': 2, 'season_status': 2, 'cover': 'http://i0.hdslb.com/bfs/bangumi/67994e27b82d40b88b025e4bcaefb3ba0a199b3f.jpg', 'update_time': 1369807086, 'title': '棒球大联盟 第三季', 'is_finish': 2, 'favorites': 1309, 'url': 'http://bangumi.bilibili.com/anime/1029', 'total_count': 26, 'pub_time': 1136563200, 'newest_ep_index': '26', 'season_id': '1029', 'type': 1}
-    # datalist = [data1,data2]
-    # save_data_to_sql(db,datalist)
+    # save_url_to_file()
     pass
