@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-@version: v1.0
+@version: v1.0.1
 @author: nyansama
 @contact: nyansama@163.com
 @software: PyCharm
