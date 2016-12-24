@@ -28,6 +28,9 @@ class SQL_API:
     def init_db(self):
         # self.init_types()
         self.init_anime()
+        self.init_cast()
+        self.init_ccr()
+        self.init_tar()
         pass
 
     def init_anime(self):
@@ -43,23 +46,31 @@ class SQL_API:
                    week INT ,\
                    country INT ,\
                    types INT,\
-                   url VARCHAR ,\
-                   cover VARCHAR ,\
+                   url VARCHAR(150) ,\
+                   cover VARCHAR(150)\
                     );"
         self.cur.execute(sql_str)
         pass
 
     def init_cast(self):
-        sql_str = "CREATE TABLE cast(id INT PRIMARY KEY NOT NULL ,\
-                   name VARCHAR(50) NOT NULL, \
-                   );"
+        sql_str = "CREATE TABLE casts(id INTEGER PRIMARY KEY NOT NULL,\
+                   name VARCHAR(50) NOT NULL);"
         self.cur.execute(sql_str)
         pass
 
     def init_ccr(self):
-        sql_str = "CREATE TABLE anime_cast(id INT PRIMARY KEY NOT NULL ,\
+        sql_str = "CREATE TABLE anime_cast(\
                    anime_id INT NOT NULL, \
-                   cast_id INT NOT NULL);"
+                   cast_id INT NOT NULL,\
+                   PRIMARY KEY (anime_id,cast_id));"
+        self.cur.execute(sql_str)
+        pass
+
+    def init_tar(self):
+        sql_str = "CREATE TABLE anime_type(\
+                   anime_id INT NOT NULL ,\
+                   type_id INT NOT NULL,\
+                   PRIMARY KEY (anime_id,type_id));"
         self.cur.execute(sql_str)
         pass
 
@@ -75,6 +86,21 @@ class SQL_API:
         sql_str = "DROP TABLE %s ;" % tbname
 
         self.cur.execute(sql_str)
+
+    def save_anime_data(self,data):
+        """
+        :type data: data
+        :param data:
+        :return:
+        """
+        sql_str = "INSERT INTO anime(id,name,favorite,year,season,pub_time,status,total_count,update_time,\
+                    week,country,types,url,cover)\
+                    VALUES (%d,'%s',%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,'%s','%s')" \
+                    %(data.id,data.name,data.favorite,data.year,data.season,data.pubtime,data.status,\
+                      data.total_count,data.updatetime,data.week,data.country,data.types,data.url,data.cover)
+
+        self.cur.execute(sql_str)
+        pass
 
     # def test_api(self):
     #     print("Hello World!")
@@ -102,6 +128,9 @@ if __name__ == '__main__':
     #     db = SQL_API('bilibili3')
     # except err.InternalError as e:
     #     print ("[-]INIT ERROR" + str(e))
+    # db.init_anime()
+    # db = SQL_API('bilibili')
+    # db.clear_table('anime')
     # db.init_anime()
 
     pass
