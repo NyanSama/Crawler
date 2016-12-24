@@ -11,14 +11,20 @@
 import requests as re
 import simplejson as json
 from DEF_DATA import types as tps
+from DEF_DATA import data as data_mod
 from Utils.SQL_API import SQL_API as sql
-# from pymysql import err
+from pymysql import err as sqlerr
 from lxml import html
 import time
+import datetime
 
 # import sqlite3 as sql
 
 class Networkerror(Exception):
+    def __init__(self, arg):
+        self.args = arg
+
+class DBerror(Exception):
     def __init__(self, arg):
         self.args = arg
 
@@ -145,19 +151,73 @@ def save_data_to_file(datalist,urllist):
             f2.write(url + '\n')
     except Exception as e:
         print(str(x) for x in e)
-        return 'fail'
-    return 'success'
+        return 0
+    return 1
+
+def save_data_to_sql(db,datalist):
+    """
+    This function can be  used for save all data in datalist to database
+    :type db: sql
+    :param db: sql
+    :param datalist:
+    :return:
+    """
+
+    count = 0
+    for d_data in datalist:
+        count += 1
+        data= data_mod()
+        try:
+            data.id = int(d_data['season_id'])
+            data.name = d_data['title'].replace("\'"," ")
+            data.favorite = d_data['favorites']
+
+            # pub_time = time.localtime(d_data['pub_time'])
+            # year = time.strftime('%Y',pub_time)
+            # month = time.strftime('%m',pub_time)
+
+            ## time trans
+            pub_time = datetime.datetime(1970,1,1) + datetime.timedelta(seconds=d_data['pub_time']+28800)
+            year = pub_time.year
+            month = pub_time.month
+            data.year = int(year)
+            data.season = int(month)
+            data.pubtime = d_data['pub_time']
+            data.status = d_data['is_finish']
+            data.updatetime = d_data['update_time']
+            try:
+                data.week = int(d_data['week'])
+            except KeyError as e:
+                data.week = -2
+            data.country = d_data['country']
+            data.types = d_data['type']
+            data.url = d_data['url']
+            data.cover = d_data['cover']
+        except Exception as e:
+            print(d_data)
+            print(e)
+
+        try:
+            db.save_anime_data(data)
+        except sqlerr.Error as e:
+            print("[-]ERROR OCCUR IN SAVE COUNT %d DATA" % count)
+            print("[--]ERROR CODE IS :" + str(e))
+            print("[--]ERROR DATA IS :" + str(data))
+
+
+
 
 
 def main():
     tp = tps()
     TYPE = [tp.TYPE_TV, tp.TYPE_THEME, tp.TYPE_OVA, tp.TYPE_OTHER]
     COUNTRY = [tp.DIS_CHINA, tp.DIS_JAPAN, tp.DIS_AMARECAN, tp.DIS_OTHER]
+    db = sql('bilibili')
 
-    datalist = []
     anime_url_list = []
     for t in TYPE:
         for c in COUNTRY:
+            datalist = []
             # get pages info
             print("[+]正在提取的数据类型为%s-%s:" % (get_type_name(t),get_country_name(c)))
             page = 1
@@ -175,6 +235,7 @@ def main():
                     url = "http://bangumi.bilibili.com/web_api/season/index?page=%d&page_size=20&version=%d" \
                           "&is_finish=0&start_year=&quarter=0&tag_id=&index_type=1&index_sort=0&area=%d" % (
                               page, t, c)
+                    del process
                     process = Get_list_data(url)
 
                 # Save url to url list
@@ -182,12 +243,13 @@ def main():
                 details = process.get_details()
                 add_info_to_detail(details, c, t)
                 datalist.extend(details)
-                time.sleep(2)
-                break
-            break
-        break
+                time.sleep(1)
+            print("[+--]存储数据...：%s - %s" % (get_country_name(c), get_type_name(t)))
+            save_data_to_sql(db, datalist)
+
 
     # save_data_to_file(datalist,anime_url_list)
+
 
 
 
@@ -232,4 +294,9 @@ if __name__ == '__main__':
 
     # get_style() # finish
     main()
+    # db = sql('bilibili')
+    # data1 = {'country': 2, 'season_status': 2, 'cover': 'http://i0.hdslb.com/bfs/bangumi/fcfd760465cf27b532b5b304352d597262f2fffa.jpg', 'update_time': 1403783691, 'title': '哆啦A梦 春之章', 'is_finish': 2, 'favorites': 15449, 'url': 'http://bangumi.bilibili.com/anime/2457', 'total_count': 6, 'pub_time': 291916800, 'newest_ep_index': '85年', 'season_id': '2457', 'type': 1}
+    # data2 = {'country': 2, 'season_status': 2, 'cover': 'http://i0.hdslb.com/bfs/bangumi/67994e27b82d40b88b025e4bcaefb3ba0a199b3f.jpg', 'update_time': 1369807086, 'title': '棒球大联盟 第三季', 'is_finish': 2, 'favorites': 1309, 'url': 'http://bangumi.bilibili.com/anime/1029', 'total_count': 26, 'pub_time': 1136563200, 'newest_ep_index': '26', 'season_id': '1029', 'type': 1}
+    # datalist = [data1,data2]
+    # save_data_to_sql(db,datalist)
     pass
