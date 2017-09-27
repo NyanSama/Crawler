@@ -87,11 +87,11 @@ async def urlgetter(site_url, file_dir,a,b):
             list_t = url_t.split('/')
             name = '_'.join(list_t[-2:]) + '.jpg'
             down_url = url_header + '/image/' + name
-            data = [file_dir,down_url]
+            datas = [file_dir,down_url]
 
             # 切协程
             print("DOWNLOAD -- %d -- %d , %s" % (a, i, time.asctime()))
-            await downloader(data)
+            await downloader(datas)
             # await asyncio.sleep(a)
             print("DOWLOAD FINISH -- %d-- %d , %s" % (a, i, time.asctime()))
 
