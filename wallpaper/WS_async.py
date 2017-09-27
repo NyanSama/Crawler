@@ -23,6 +23,10 @@ from subprocess import call
 
 @asyncio.coroutine
 def downloader(data):
+    """
+    :param data: list
+    :return:
+    """
     file_dir = data[0]
     down_site = data[1]
     try:
