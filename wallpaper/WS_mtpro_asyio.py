@@ -121,7 +121,7 @@ def start_mltp(settings):
     url = 'https://wallpaperscraft.com/catalog/{type}/{size}'.format(type=type, size=size)
     url_header = 'https://wallpaperscraft.com'
 
-    process_num = 4
+    process_num = settings['multi_process']
 
     # 初始化文件夹
     if not os.path.exists(file_dir):
@@ -161,8 +161,8 @@ def start_mltp(settings):
 
 if __name__ == '__main__':
     settings = {
-        "type": "anime",
-        "size": "2560x1080",
+        "type": "space",
+        "size": "1920x1080",
         "path": "d:/dowload",
         "multi_process": 4
     }
