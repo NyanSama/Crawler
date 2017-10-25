@@ -8,7 +8,7 @@
 @contact: nyansama@163.com
 @site: http://www.nyansama.cn
 @software: PyCharm Community Edition
-@file: WS.py
+@file: WS_yield.py
 @time: 2017/9/25 15:47
 @PS:
     本程序利用asyncio进行协程测试
@@ -23,10 +23,7 @@ from subprocess import call
 
 @asyncio.coroutine
 def downloader(data):
-    """
-    :param data: list
-    :return:
-    """
+    return "Down success!"
     file_dir = data[0]
     down_site = data[1]
     try:
@@ -42,11 +39,9 @@ def downloader(data):
     except:
         pass
 
-    yield
-
-
-
-
+    # future.set_result("down succes!")
+    # yield from future
+    return "Down success!"
 
 
 def getpages(url):
@@ -91,13 +86,15 @@ async def urlgetter(site_url, file_dir,a,b):
             list_t = url_t.split('/')
             name = '_'.join(list_t[-2:]) + '.jpg'
             down_url = url_header + '/image/' + name
-            datas = [file_dir,down_url]
+            data = [file_dir,down_url]
 
             # 切协程
             print("DOWNLOAD -- %d -- %d , %s" % (a, i, time.asctime()))
-            await downloader(datas)
+            # future = asyncio.Future()
+
+            result = await asyncio.gather(downloader(data))
             # await asyncio.sleep(a)
-            print("DOWLOAD FINISH -- %d-- %d , %s" % (a, i, time.asctime()))
+            print("DOWLOAD FINISH -- %d-- %d , %s -- %s " % (a, i, time.asctime(), result))
 
 
 
@@ -112,8 +109,8 @@ def start():
     url = 'https://wallpaperscraft.com/catalog/anime/2560x1080'
     loop = asyncio.get_event_loop()
     task = [
-        asyncio.ensure_future(urlgetter(url, file_dir, 2, 3)),
-        asyncio.ensure_future(urlgetter(url, file_dir, 3, 4)),
+        asyncio.ensure_future(urlgetter(url, file_dir, 5, 6)),
+        asyncio.ensure_future(urlgetter(url, file_dir, 6, 7)),
         asyncio.ensure_future(urlgetter(url, file_dir, 4, 5))
     ]
     now = time.time()

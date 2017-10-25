@@ -8,7 +8,7 @@
 @contact: nyansama@163.com
 @site: http://www.nyansama.cn
 @software: PyCharm Community Edition
-@file: WS.py
+@file: WS_yield.py
 @time: 2017/9/25 15:47
 @PS:
     本程序利用send/yield进行测试
