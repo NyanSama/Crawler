@@ -3,7 +3,7 @@
 
 
 """
-@version: python3.5
+@version: 1.2.0
 @author: ‘miaomiao‘
 @contact: nyansama@163.com
 @site: http://www.nyansama.cn
@@ -12,19 +12,25 @@
 @time: 2017/9/27 15:10
 @PS :
      本程序试用asyncio 及 multiprocessing 包进行多进程并行及协程并发异步IO操作
+     1.2.0 : 添加配置文件读取
 """
 
 from bs4 import BeautifulSoup
 import requests, os, sys, time
 import multiprocessing
 import asyncio
+import configparser
 
 now = lambda :time.time()
 
 def getpages(url):
     print("GET PAGES...")
     page = []
-    data = requests.get(url)
+    try:
+        data = requests.get(url)
+    except requests.ConnectionError as e:
+        print ("[--]Connection Error: Can't access "+ url)
+        exit()
     soup = BeautifulSoup(data.content, 'lxml')
     pages = soup.find('div', 'pages')
     if not pages:
@@ -155,19 +161,51 @@ def start_mltp(settings):
     p.start()
 
 
+def get_config():
+    settings = {}
+    parser = configparser.ConfigParser()
 
+    try:
+        parser.read('configs.conf','utf-8')
+    except Exception as e:
+        print (e)
+
+    try:
+        settings = {
+            "type" : parser.get('basic','type'),
+            "size" : parser.get('basic','size'),
+            "path" : parser.get('basic','path'),
+            "multi_process" : parser.getint('advance','multi_num'),
+
+        }
+    except configparser.NoSectionError as e:
+        print("[--]Parser Error:" + str(e))
+
+    # print (settings)
+    return settings
 
 
 
 if __name__ == '__main__':
     settings = {
         "type": "space",
-        "size": "1920x1080",
+        "size": "2560x1080",
         "path": "d:/dowload",
         "multi_process": 4
     }
 
+    settings = get_config()
+
+    if len(settings) is 0:
+        print("[--]Read config Failed.")
+        exit()
+
     start_mltp(settings)
+
+    # start_mltp(settings)
+
+
+
     # start_async(settings)
     # mult_num = settings['multi_process']
     # for i in range(mult_num):
