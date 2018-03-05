@@ -9,8 +9,8 @@
 @time: 2016/12/5 20:32
 """
 
-#from selenium import webdriver
-#from selenium.common.exceptions import *
+from selenium import webdriver
+from selenium.common.exceptions import *
 import json
 from lxml import html
 import requests
