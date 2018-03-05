@@ -9,12 +9,12 @@
 @time: 2016/12/5 20:32
 """
 
-from selenium import webdriver
-from selenium.common.exceptions import *
+#from selenium import webdriver
+#from selenium.common.exceptions import *
 import json
 from lxml import html
 import requests
-
+import os
 
 class GetBilibiliComment():
     def __init__(self):
@@ -23,7 +23,7 @@ class GetBilibiliComment():
     def __del__(self):
         self.browser.close()
 
-    def __exit__(self):
+    def __exit__(self,Type, value, traceback):
         self.browser.close()
 
     def Getname(self, avnum):
@@ -64,14 +64,14 @@ class GetBilibiliComment():
     ####################
     # use json pkg get comment
     #
-    def Getcomment_j(num):
+    def Getcomment_j(self,num):
         page = 1
         f_name = 'comment/av%d' % num
         f = open(f_name, 'w+')
         while page != -1:
             url = "http://api.bilibili.com/x/v2/reply?jsonp=jsonp&type=1&sort=0&oid=%d&pn=%d" % (num, page)
             pkg = requests.get(url)
-            data = json.loads(pkg.content, 'utf-8')
+            data = json.loads(pkg.content,encoding='utf-8')
 
             page += 1
             # print data
@@ -94,7 +94,42 @@ class GetBilibiliComment():
 
                 f.write(content.encode('utf-8') + '\n')
 
+def Getcomment_j(num):
+    page = 1
+    f_name = './comment/av%d' % num
+    try:
+        print(os.get_exec_path())
+    except Exception as identifier:
+        print ("DIR already have %s" % identifier)
+    f = open('comment.txt', 'wb+')
+    while page != -1:
+        url = "http://api.bilibili.com/x/v2/reply?jsonp=jsonp&type=1&sort=0&oid=%d&pn=%d" % (num, page)
+        pkg = requests.get(url)
+        data = json.loads(pkg.content,encoding='utf-8')
 
+        page += 1
+        # print data
+        data = data['data']
+        total_floor_num = data['page']['count']
+        total_user_num = data['page']['acount']
+        replies = data['replies']
+        for reply in replies:
+            u_name = reply['member']['uname']
+            u_sign = reply['member']['sign']
+            content = reply['content']['message']
+            lenth_of_reply = len(reply['replies'])
+            if lenth_of_reply:
+                for contents in reply['replies']:
+                    r_content = contents['content']['message']
+                    content = content + '\n --' + r_content
+            floor_num = int(reply['floor'])
+            if floor_num == 1:
+                page = -1
+
+            try:
+                f.write(content.encode(encoding='utf-8'))
+            except Exception as e:
+                print(e)
 # def func():
 #     browser = webdriver.Chrome()
 #     browser.get("http://www.bilibili.com/video/av7399194/")
@@ -125,6 +160,7 @@ class GetBilibiliComment():
 
 
 if __name__ == '__main__':
-    test = GetBilibiliComment()
+    #test = GetBilibiliComment()
     # test.Getname(7338126)
-    test.Getcomment_j(7338126)
+    #test.Getcomment_j(7338126)
+    Getcomment_j(7338126)
