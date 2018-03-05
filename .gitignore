@@ -105,3 +105,4 @@ bilibili/phantomjs.exe
 bilibili/test.html
 
 .d
+.markdownlint.json
